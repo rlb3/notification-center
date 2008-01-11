@@ -24,7 +24,7 @@ has method_calls => (
 sub add {
     my ( $self, $args ) = @_;
 
-    my $event    = delete $args->{'event'} || 'DEFAULT';
+    my $event    = $args->{'event'} || 'DEFAULT';
     my $observer = $args->{'observer'};
     my $method   = $args->{'method'} || 'update';
 
