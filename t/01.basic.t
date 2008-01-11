@@ -1,6 +1,6 @@
 #!perl
 
-use Test::More tests => 1;
+use Test::More tests => 3;
 
 {
 
@@ -23,11 +23,24 @@ use Test::More tests => 1;
     package PrintName;
     use Moose;
     
+    sub display {
+        my ( $self, $person ) = @_;
+        my $name = sprintf "%s, %s", $person->lname, $person->fname;
+        Test::More::diag($name);
+        Test::More::is($name, 'Wall, Larry', 'Displaying the name');
+    }
+
+    no Moose;
+
+    package UCPrintName;
+    use Moose;
 
     sub display {
         my ( $self, $person ) = @_;
         my $name = sprintf "%s, %s", $person->lname, $person->fname;
-        Test::More::is($name, 'Wall, Larry', 'Displaying the name');
+        $name = uc $name;
+        Test::More::diag($name);
+        Test::More::is($name, 'WALL, LARRY', 'Displaying the name');
     }
     
     no Moose;
@@ -37,6 +50,7 @@ use MooseX::Notification;
 
 my $person = Person->new( fname => 'Larry', lname => 'Wall' );
 my $d  = PrintName->new;
+my $u  = UCPrintName->new;
 
 my $ns = MooseX::Notification->instance;
 
@@ -47,6 +61,14 @@ $ns->add(
         method   => 'display',
     }
 );
+$ns->add(
+    {
+        observer => $u,
+        method   => 'display',
+    }
+);
 
 $person->print_name;
 
+$ns->remove({observer => $u});
+$person->print_name;
