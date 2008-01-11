@@ -1,30 +1,42 @@
 package MooseX::Notification::Manager;
 
 use MooseX::Singleton;
-use Scalar::Util qw(reftype blessed);
+use Scalar::Util qw(reftype blessed refaddr);
+use Set::Object;
 
-our %observers = ();
+has observers => (
+    is      => 'ro',
+    isa     => 'HashRef[Set::Object]',
+    default => sub { {} }
+);
+
+has method_calls => (
+    is      => 'ro',
+    isa     => 'HashRef',
+    default => sub { {} }
+);
 
 sub add {
     my ( $self, $args ) = @_;
-    confess '$args must be a hashref' if ref $args ne 'HASH';
-    confess 'observer must be object'
-      if ( !$args->{'observer'} and !blessed $args->{'observer'} );
-    confess 'method name must be given' if ( !$args->{'method'} );
 
-    my $event = delete $args->{'event'} || 'DEFAULT';
+    my $event    = delete $args->{'event'} || 'DEFAULT';
+    my $observer = $args->{'observer'};
+    my $method   = $args->{'method'} || 'update';
 
-    push @{ $observers{$event}->{ $args->{'observer'} } }, $args;
+    $self->observers->{$event} ||= Set::Object->new;
+
+    $self->observers->{$event}->insert($observer);
+    $self->method_calls->{ refaddr $observer } = $method;
 }
 
 sub remove {
     my ( $self, $args ) = @_;
-    confess '$args must be a hashref' if ref $args ne 'HASH';
-    confess 'observer must be object'
-      if ( !$args->{'observer'} and !blessed $args->{'observer'} );
 
     my $event = $args->{'event'} || 'DEFAULT';
-    delete $observers{$event}->{ $args->{'observer'} };
+    my $observer = $args->{'observer'};
+
+    $self->observers->{$event}->remove($observer);
+    delete $self->method_calls->{ refaddr $observer }
 }
 
 1;

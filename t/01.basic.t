@@ -31,15 +31,26 @@ $ns->add(
     }
 );
 
+diag "ADD ns";
 diag $ns->dump;
 
-$ns->remove(
+my $ns2 = MooseX::Notification::Manager->instance;
+
+diag "ADD ns2";
+diag $ns2->dump;
+
+
+$ns2->remove(
     {
         observer => $me,
         event    => 'print',
     }
 );
 
+diag "REMOVE ns2";
+diag $ns2->dump;
+
+diag "ns";
 diag $ns->dump;
 
 ok 1;
