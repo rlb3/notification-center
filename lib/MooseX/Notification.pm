@@ -64,3 +64,48 @@ sub notify {
 }
 
 1;
+
+__END__
+=pod
+
+=head1 NAME
+
+MooseX::Notification - An observer/notification for Moose
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+An observer/notification based on the objective-c NSNotificationCenter Class
+
+=over
+
+=item add
+
+args keys: observer, event, method
+
+observer: the object that will observer events
+
+event: the name of the event that you are assigning the observer. Defaults to DEFAULT
+
+method: the method you want called on the observer when the event is called. Defaults to update
+
+=item remove
+
+args keys: observer, event
+
+observer: the object that you want to remove
+
+event: the name of the event that you are removing the observer. Defaults to DEFAULT
+
+=item notify
+
+args: $event, @data
+
+$event: the event you want to trigger
+
+@data: data you want to pass into observers
+
+=back
+
+=cut
