@@ -1,107 +1,66 @@
 package MooseX::Notification;
 
-use warnings;
-use strict;
+use MooseX::Singleton;
+use Scalar::Util qw(refaddr);
+use Set::Object;
 
-=head1 NAME
+our $VERSION = '0.0.1';
 
-MooseX::Notification - The great new MooseX::Notification!
+has observers => (
+    is      => 'ro',
+    isa     => 'HashRef[Set::Object]',
+    default => sub {
+        { DEFAULT => Set::Object->new }
+    }
+);
 
-=head1 VERSION
+has method_calls => (
+    is      => 'ro',
+    isa     => 'HashRef',
+    default => sub { {} }
+);
 
-Version 0.01
+sub add {
+    my ( $self, $args ) = @_;
 
-=cut
+    my $event    = delete $args->{'event'} || 'DEFAULT';
+    my $observer = $args->{'observer'};
+    my $method   = $args->{'method'} || 'update';
 
-our $VERSION = '0.01';
+    $self->observers->{$event} ||= Set::Object->new;
 
-
-=head1 SYNOPSIS
-
-Quick summary of what the module does.
-
-Perhaps a little code snippet.
-
-    use MooseX::Notification;
-
-    my $foo = MooseX::Notification->new();
-    ...
-
-=head1 EXPORT
-
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
-
-=head1 FUNCTIONS
-
-=head2 function1
-
-=cut
-
-sub function1 {
+    $self->observers->{$event}->insert($observer);
+    $self->method_calls->{ refaddr $observer } = $method;
 }
 
-=head2 function2
+sub remove {
+    my ( $self, $args ) = @_;
 
-=cut
+    my $event = $args->{'event'} || 'DEFAULT';
+    my $observer = $args->{'observer'};
 
-sub function2 {
+    delete $self->method_calls->{ refaddr $observer };
+    $self->observers->{$event}->remove($observer);
 }
 
-=head1 AUTHOR
+sub notify {
+    my ( $self, $event, @data ) = @_;
 
-Robert Boone, C<< <rlb at cpan.org> >>
+    my $observers;
+    if ( $event ne 'DEFAULT' ) {
+        $observers = Set::Object->new(
+            $self->observers->{$event}->members,
+            $self->observers->{'DEFAULT'}->members
+        );
+    }
+    else {
+        $observers = $self->observers->{$event};
+    }
 
-=head1 BUGS
+    foreach my $observer ( $observers->members ) {
+        my $method = $self->method_calls->{ refaddr $observer };
+        $observer->$method(@data);
+    }
+}
 
-Please report any bugs or feature requests to C<bug-moosex-notification at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=MooseX-Notification>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
-
-
-
-=head1 SUPPORT
-
-You can find documentation for this module with the perldoc command.
-
-    perldoc MooseX::Notification
-
-
-You can also look for information at:
-
-=over 4
-
-=item * RT: CPAN's request tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=MooseX-Notification>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/MooseX-Notification>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/MooseX-Notification>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/MooseX-Notification>
-
-=back
-
-
-=head1 ACKNOWLEDGEMENTS
-
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2007 Robert Boone, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
-
-
-=cut
-
-1; # End of MooseX::Notification
+1;

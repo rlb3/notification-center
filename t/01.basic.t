@@ -1,56 +1,52 @@
 #!perl
 
-use Test::More qw(no_plan);
+use Test::More tests => 1;
 
 {
+
     package Person;
     use Moose;
+    use MooseX::Notification;
+
+    has fname => ( is => 'rw' );
+    has lname => ( is => 'rw' );
+
+    sub print_name {
+        my ( $self ) = @_;
+        
+        my $ns = MooseX::Notification->instance;
+        $ns->notify('print', $self);
+    }
+
+    no Moose;
+
+    package PrintName;
+    use Moose;
     
-    has fname => (is => 'rw');
-    has lname => (is => 'rw');
-    
+
     sub display {
-        my ($self) = @_;
-        sprintf "%s, %s\n", $self->lname, $self->fname;
+        my ( $self, $person ) = @_;
+        my $name = sprintf "%s, %s", $person->lname, $person->fname;
+        Test::More::is($name, 'Wall, Larry', 'Displaying the name');
     }
     
     no Moose;
 }
 
-use MooseX::Notification::Manager;
+use MooseX::Notification;
 
-my $me = Person->new(fname => 'Robert', lname => 'Boone');
+my $person = Person->new( fname => 'Larry', lname => 'Wall' );
+my $d  = PrintName->new;
 
-my $ns = MooseX::Notification::Manager->instance;
+my $ns = MooseX::Notification->instance;
 
 $ns->add(
     {
-        observer => $me,
+        observer => $d,
         event    => 'print',
         method   => 'display',
     }
 );
 
-diag "ADD ns";
-diag $ns->dump;
+$person->print_name;
 
-my $ns2 = MooseX::Notification::Manager->instance;
-
-diag "ADD ns2";
-diag $ns2->dump;
-
-
-$ns2->remove(
-    {
-        observer => $me,
-        event    => 'print',
-    }
-);
-
-diag "REMOVE ns2";
-diag $ns2->dump;
-
-diag "ns";
-diag $ns->dump;
-
-ok 1;
