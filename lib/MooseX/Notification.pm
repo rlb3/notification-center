@@ -59,7 +59,7 @@ sub notify {
 
     foreach my $observer ( $observers->members ) {
         my $method = $self->method_calls->{ refaddr $observer };
-        $observer->$method(@data);
+        $observer->$method(@data) if $observer->can($method);
     }
 }
 
@@ -73,6 +73,68 @@ __END__
 MooseX::Notification - An observer/notification for Moose
 
 =head1 SYNOPSIS
+
+    {
+
+        package Counter;
+
+        use Moose;
+        use MooseX::Notification;
+
+        has count => ( is => 'rw', isa => 'Int', default => 0 );
+
+        sub inc {
+            my ($self) = @_;
+            $self->count($self->count + 1);
+
+            my $mn = MooseX::Notification->instance;
+
+            $mn->notify( 'print', $self->count );
+        }
+
+        sub dec {
+            my ($self) = @_;
+            $self->count($self->count - 1);
+
+            my $mn = MooseX::Notification->instance;
+
+            $mn->notify( 'print', $self->count );
+        }
+
+        no Moose;
+
+        package CountPrint;
+
+        use Moose;
+
+        sub print {
+            my ( $self, $count ) = @_;
+
+            print $count;
+        }
+
+        no Moose;
+    }
+
+    my $count = Counter->new;
+
+    my $mn = MooseX::Notification->instance;
+    my $cp = CountPrint->new;
+    $mn->add({
+       observer => $cp,
+       event    => 'print',
+       method   => 'print',
+    });
+
+    for (1 .. 10) {
+        $count->inc;
+    }
+
+    for (1 .. 5) {
+        $count->dec;
+    }
+
+    # prints: 1234567891098765
 
 =head1 DESCRIPTION
 
