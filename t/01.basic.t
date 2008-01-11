@@ -26,7 +26,6 @@ use Test::More tests => 3;
     sub display {
         my ( $self, $person ) = @_;
         my $name = sprintf "%s, %s", $person->lname, $person->fname;
-        Test::More::diag($name);
         Test::More::is( $name, 'Wall, Larry', 'Displaying the name' );
     }
 
@@ -39,7 +38,6 @@ use Test::More tests => 3;
         my ( $self, $person ) = @_;
         my $name = sprintf "%s, %s", $person->lname, $person->fname;
         $name = uc $name;
-        Test::More::diag($name);
         Test::More::is( $name, 'WALL, LARRY', 'Displaying the name' );
     }
 
@@ -49,14 +47,14 @@ use Test::More tests => 3;
 use MooseX::Notification;
 
 my $person = Person->new( fname => 'Larry', lname => 'Wall' );
-my $d      = PrintName->new;
+my $p      = PrintName->new;
 my $u      = UCPrintName->new;
 
 my $ns = MooseX::Notification->instance;
 
 $ns->add(
     {
-        observer => $d,
+        observer => $p,
         event    => 'print',
         method   => 'display',
     }

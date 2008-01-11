@@ -3,6 +3,5 @@ MANIFEST
 Makefile.PL
 README
 lib/MooseX/Notification.pm
-t/00-load.t
-t/pod-coverage.t
-t/pod.t
+t/00.load.t
+t/01.basic.t

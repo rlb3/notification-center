@@ -3,6 +3,7 @@ use inc::Module::Install;
 name     'MooseX-Notification';
 all_from 'lib/MooseX/Notification.pm';
 author   'Robert Boone <rlb@cpan.org>';
+license  'Perl';
 
 requires 'Moose';
 requires 'MooseX::Singleton';
