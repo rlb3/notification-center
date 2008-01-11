@@ -4,7 +4,8 @@ use MooseX::Singleton;
 use Scalar::Util qw(refaddr);
 use Set::Object;
 
-our $VERSION = '0.0.1';
+our $AUTHORITY = 'CPAN:rlb';
+our $VERSION   = '0.0.1';
 
 has observers => (
     is      => 'ro',
@@ -66,6 +67,7 @@ sub notify {
 1;
 
 __END__
+
 =pod
 
 =head1 NAME
