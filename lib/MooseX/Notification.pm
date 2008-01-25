@@ -121,7 +121,12 @@ MooseX::Notification - An observer/notification for Moose
 
         has count => (is => 'rw', isa => 'Int', default => 0);
 
-          sub get_count {
+        sub print {
+            my ($self) = @_;
+            print $self->count;
+        }
+
+        sub get_count {
             my ( $self, $count ) = @_;
             $self->count($count);
         }
@@ -149,7 +154,7 @@ MooseX::Notification - An observer/notification for Moose
         $count->dec;
     }
 
-    print $cp->count; # 5
+    $cp->print; # 5
 
 =head1 DESCRIPTION
 
