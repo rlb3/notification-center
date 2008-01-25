@@ -6,10 +6,10 @@ author   'Robert Boone <rlb@cpan.org>';
 license  'Perl';
 
 requires 'Moose';
-requires 'MooseX::Singleton';
 requires 'Set::Object';
 
 build_requires 'Test::More';
+build_requires 'Bread::Board';
 
 auto_install;
 
