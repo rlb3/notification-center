@@ -58,6 +58,8 @@ sub remove {
 sub notify {
     my ( $self, $event, @data ) = @_;
 
+    return if !exists $self->observers->{$event};
+
     my $observers;
     if ( $event ne 'DEFAULT' ) {
         $observers = Set::Object->new( $self->observers->{$event}->members, $self->observers->{'DEFAULT'}->members );
@@ -95,20 +97,20 @@ MooseX::Notification - An observer/notification for Moose
 
         sub inc {
             my ($self) = @_;
-            $self->count($self->count + 1);
+            $self->count( $self->count + 1 );
 
             my $mn = MooseX::Notification->default;
 
-            $mn->notify( 'print', $self->count );
+            $mn->notify( 'count', $self->count );
         }
 
         sub dec {
             my ($self) = @_;
-            $self->count($self->count - 1);
+            $self->count( $self->count - 1 );
 
             my $mn = MooseX::Notification->default;
 
-            $mn->notify( 'print', $self->count );
+            $mn->notify( 'count', $self->count );
         }
 
         no Moose;
@@ -117,10 +119,11 @@ MooseX::Notification - An observer/notification for Moose
 
         use Moose;
 
-        sub print {
-            my ( $self, $count ) = @_;
+        has count => (is => 'rw', isa => 'Int', default => 0);
 
-            print $count;
+          sub get_count {
+            my ( $self, $count ) = @_;
+            $self->count($count);
         }
 
         no Moose;
@@ -130,21 +133,23 @@ MooseX::Notification - An observer/notification for Moose
 
     my $mn = MooseX::Notification->default;
     my $cp = CountPrint->new;
-    $mn->add({
-       observer => $cp,
-       event    => 'print',
-       method   => 'print',
-    });
+    $mn->add(
+        {
+            observer => $cp,
+            event    => 'count',
+            method   => 'get_count',
+        }
+    );
 
-    for (1 .. 10) {
+    for ( 1 .. 10 ) {
         $count->inc;
     }
 
-    for (1 .. 5) {
+    for ( 1 .. 5 ) {
         $count->dec;
     }
 
-    # prints: 1234567891098765
+    print $cp->count; # 5
 
 =head1 DESCRIPTION
 
