@@ -97,7 +97,7 @@ MooseX::Notification - An observer/notification for Moose
             my ($self) = @_;
             $self->count($self->count + 1);
 
-            my $mn = MooseX::Notification->instance;
+            my $mn = MooseX::Notification->default;
 
             $mn->notify( 'print', $self->count );
         }
@@ -106,7 +106,7 @@ MooseX::Notification - An observer/notification for Moose
             my ($self) = @_;
             $self->count($self->count - 1);
 
-            my $mn = MooseX::Notification->instance;
+            my $mn = MooseX::Notification->default;
 
             $mn->notify( 'print', $self->count );
         }
@@ -128,7 +128,7 @@ MooseX::Notification - An observer/notification for Moose
 
     my $count = Counter->new;
 
-    my $mn = MooseX::Notification->instance;
+    my $mn = MooseX::Notification->default;
     my $cp = CountPrint->new;
     $mn->add({
        observer => $cp,
