@@ -4,14 +4,25 @@ use MooseX::Singleton;
 use Scalar::Util qw(refaddr);
 use Set::Object;
 
-our $AUTHORITY = 'CPAN:rlb';
-our $VERSION   = '0.0.1';
+our $AUTHORITY = 'CPAN:RLB';
+our $VERSION   = '0.0.2';
+
+my $instance;
+
+has default => (
+    is      => 'ro',
+    isa     => 'MooseX::Notification',
+    lazy    => 1,
+    default => sub {
+        return $instance ||= MooseX::Notification->new;
+    },
+);
 
 has observers => (
     is      => 'ro',
     isa     => 'HashRef[Set::Object]',
     default => sub {
-        { DEFAULT => Set::Object->new }
+        { DEFAULT => Set::Object->new };
     }
 );
 
@@ -49,10 +60,7 @@ sub notify {
 
     my $observers;
     if ( $event ne 'DEFAULT' ) {
-        $observers = Set::Object->new(
-            $self->observers->{$event}->members,
-            $self->observers->{'DEFAULT'}->members
-        );
+        $observers = Set::Object->new( $self->observers->{$event}->members, $self->observers->{'DEFAULT'}->members );
     }
     else {
         $observers = $self->observers->{$event};
