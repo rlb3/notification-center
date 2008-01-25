@@ -14,7 +14,7 @@ use Test::More tests => 3;
     sub print_name {
         my ($self) = @_;
 
-        my $ns = MooseX::Notification->instance;
+        my $ns = MooseX::Notification->default;
         $ns->notify( 'print', $self );
     }
 
@@ -50,7 +50,7 @@ my $person = Person->new( fname => 'Larry', lname => 'Wall' );
 my $p      = PrintName->new;
 my $u      = UCPrintName->new;
 
-my $ns = MooseX::Notification->instance;
+my $ns = MooseX::Notification->default;
 
 $ns->add(
     {
