@@ -15,7 +15,7 @@ use Test::More tests => 3;
         my ($self) = @_;
 
         my $ns = MooseX::Notification->default;
-        $ns->notify( 'print', $self );
+        $ns->notify( { event => 'print', args => $self } );
     }
 
     no Moose;

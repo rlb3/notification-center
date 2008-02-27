@@ -56,7 +56,9 @@ sub remove {
 }
 
 sub notify {
-    my ( $self, $event, @data ) = @_;
+    my ( $self, $args ) = @_;
+
+    my $event = $args->{'event'};
 
     return if !exists $self->observers->{$event};
 
@@ -70,7 +72,7 @@ sub notify {
 
     foreach my $observer ( $observers->members ) {
         my $method = $self->method_calls->{ refaddr $observer };
-        $observer->$method(@data) if $observer->can($method);
+        $observer->$method($args->{'args'}) if $observer->can($method);
     }
 }
 
@@ -98,28 +100,24 @@ MooseX::Notification - An observer/notification for Moose
         sub inc {
             my ($self) = @_;
             $self->count( $self->count + 1 );
-
             my $mn = MooseX::Notification->default;
-
             $mn->notify( 'count', $self->count );
         }
 
         sub dec {
             my ($self) = @_;
             $self->count( $self->count - 1 );
-
             my $mn = MooseX::Notification->default;
-
-            $mn->notify( 'count', $self->count );
+            $mn->notify( { event => 'count', data => $self->count } );
         }
 
         no Moose;
 
-        package CountPrint;
+        package TrackCount;
 
         use Moose;
 
-        has count => (is => 'rw', isa => 'Int', default => 0);
+        has count => ( is => 'rw', isa => 'Int', default => 0 );
 
         sub print {
             my ($self) = @_;
@@ -137,10 +135,10 @@ MooseX::Notification - An observer/notification for Moose
     my $count = Counter->new;
 
     my $mn = MooseX::Notification->default;
-    my $cp = CountPrint->new;
+    my $tc = TrackCount->new;
     $mn->add(
         {
-            observer => $cp,
+            observer => $tc,
             event    => 'count',
             method   => 'get_count',
         }
@@ -149,18 +147,70 @@ MooseX::Notification - An observer/notification for Moose
     for ( 1 .. 10 ) {
         $count->inc;
     }
-
     for ( 1 .. 5 ) {
         $count->dec;
     }
 
-    $cp->print; # 5
+    $tc->print;    # 5
+
+
+    or use IOC using Bread::Board
+    
+    use Bread::Board;
+
+    my $c = container 'TestApp' => as {
+
+        service 'fname' => 'Larry';
+        service 'lname' => 'Wall';
+
+        service 'notification_center' => (
+            class     => 'MooseX::Notification',
+            lifecycle => 'Singleton',
+        );
+
+        service 'person' => (
+            class        => 'Person',
+            dependencies => {
+                notification => depends_on('notification_center'),
+                fname        => depends_on('fname'),
+                lname        => depends_on('lname'),
+            },
+        );
+
+        service 'upn' => (
+            class        => 'UCPrintName',
+            dependencies => { notification => depends_on('notification_center') },
+        );
+
+        service 'pn' => (
+            class        => 'PrintName',
+            dependencies => { notification => depends_on('notification_center'), },
+        );
+    };
+
+    my $pn     = $c->fetch('pn')->get;
+    my $upn    = $c->fetch('upn')->get;
+    my $person = $c->fetch('person')->get;
+    my $nc     = $c->fetch('notification_center')->get;
+
+    $person->print_name;
+    $nc->remove( { observer => $upn } );
+    $person->print_name;
+
 
 =head1 DESCRIPTION
 
 An observer/notification based on the objective-c NSNotificationCenter Class
 
 =over
+
+=item new
+
+The method creates a new instance of MooseX::Notification object
+
+=item default
+
+This method creates a singleton of the MooseX::Notification object
 
 =item add
 
@@ -182,11 +232,11 @@ event: the name of the event that you are removing the observer. Defaults to DEF
 
 =item notify
 
-args: $event, @data
+args keys : event, args
 
-$event: the event you want to trigger
+event: the event you want to trigger
 
-@data: data you want to pass into observers
+args: data you want to pass into observers
 
 =back
 

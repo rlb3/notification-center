@@ -7,15 +7,16 @@ use Test::More tests => 3;
     package Person;
     use Moose;
 
-    has fname        => ( is => 'rw', isa => 'Str' );
-    has lname        => ( is => 'rw', isa => 'Str' );
-    has notification => ( is => 'ro', isa => 'MooseX::Notification', required => 1 );
+    has fname => ( is => 'rw', isa => 'Str' );
+    has lname => ( is => 'rw', isa => 'Str' );
+    has notification =>
+      ( is => 'ro', isa => 'MooseX::Notification', required => 1 );
 
     sub print_name {
         my ($self) = @_;
 
         my $ns = $self->notification;
-        $ns->notify( 'print', $self );
+        $ns->notify( { event => 'print', args => $self } );
     }
 
     no Moose;
@@ -23,7 +24,8 @@ use Test::More tests => 3;
     package PrintName;
     use Moose;
 
-    has notification => ( is => 'ro', isa => 'MooseX::Notification', required => 1 );
+    has notification =>
+      ( is => 'ro', isa => 'MooseX::Notification', required => 1 );
 
     sub BUILD {
         my ( $self, $args ) = @_;
@@ -48,7 +50,8 @@ use Test::More tests => 3;
     package UCPrintName;
     use Moose;
 
-    has notification => ( is => 'ro', isa => 'MooseX::Notification', required => 1 );
+    has notification =>
+      ( is => 'ro', isa => 'MooseX::Notification', required => 1 );
 
     sub BUILD {
         my ( $self, $args ) = @_;
@@ -103,11 +106,11 @@ my $c = container 'TestApp' => as {
     );
 };
 
-my $pn = $c->fetch('pn')->get;
-
-my $upn = $c->fetch('upn')->get;
+my $pn     = $c->fetch('pn')->get;
+my $upn    = $c->fetch('upn')->get;
 my $person = $c->fetch('person')->get;
+my $nc     = $c->fetch('notification_center')->get;
 
 $person->print_name;
-$person->notification->remove({ observer => $upn });
+$nc->remove( { observer => $upn } );
 $person->print_name;
