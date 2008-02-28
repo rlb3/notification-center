@@ -6,7 +6,7 @@ use Test::More tests => 3;
 
     package Person;
     use Moose;
-    use MooseX::Notification;
+    use Notification::Center;
 
     has fname => ( is => 'rw' );
     has lname => ( is => 'rw' );
@@ -14,7 +14,7 @@ use Test::More tests => 3;
     sub print_name {
         my ($self) = @_;
 
-        my $ns = MooseX::Notification->default;
+        my $ns = Notification::Center->default;
         $ns->notify( { event => 'print', args => $self } );
     }
 
@@ -44,13 +44,13 @@ use Test::More tests => 3;
     no Moose;
 }
 
-use MooseX::Notification;
+use Notification::Center;
 
 my $person = Person->new( fname => 'Larry', lname => 'Wall' );
 my $p      = PrintName->new;
 my $u      = UCPrintName->new;
 
-my $ns = MooseX::Notification->default;
+my $ns = Notification::Center->default;
 
 $ns->add(
     {

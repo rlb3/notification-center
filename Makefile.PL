@@ -1,7 +1,7 @@
 use inc::Module::Install;
 
-name     'MooseX-Notification';
-all_from 'lib/MooseX/Notification.pm';
+name     'Notification-Center';
+all_from 'lib/Notification/Center.pm';
 author   'Robert Boone <rlb@cpan.org>';
 license  'Perl';
 

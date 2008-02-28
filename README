@@ -1,4 +1,4 @@
-MooseX-Notification
+Notification-Center
 
 The README is used to introduce the module and provide instructions on
 how to install the module, any machine dependencies it may have (for
@@ -26,26 +26,26 @@ SUPPORT AND DOCUMENTATION
 After installing, you can find documentation for this module with the
 perldoc command.
 
-    perldoc MooseX::Notification
+    perldoc Notification::Center
 
 You can also look for information at:
 
     RT, CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=MooseX-Notification
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Notification-Center
 
     AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/MooseX-Notification
+        http://annocpan.org/dist/Notification-Center
 
     CPAN Ratings
-        http://cpanratings.perl.org/d/MooseX-Notification
+        http://cpanratings.perl.org/d/Notification-Center
 
     Search CPAN
-        http://search.cpan.org/dist/MooseX-Notification
+        http://search.cpan.org/dist/Notification-Center
 
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2007 Robert Boone
+Copyright (C) 2008 Robert Boone
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

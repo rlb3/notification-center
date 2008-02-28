@@ -10,7 +10,7 @@ use Test::More tests => 3;
     has fname => ( is => 'rw', isa => 'Str' );
     has lname => ( is => 'rw', isa => 'Str' );
     has notification =>
-      ( is => 'ro', isa => 'MooseX::Notification', required => 1 );
+      ( is => 'ro', isa => 'Notification::Center', required => 1 );
 
     sub print_name {
         my ($self) = @_;
@@ -25,7 +25,7 @@ use Test::More tests => 3;
     use Moose;
 
     has notification =>
-      ( is => 'ro', isa => 'MooseX::Notification', required => 1 );
+      ( is => 'ro', isa => 'Notification::Center', required => 1 );
 
     sub BUILD {
         my ( $self, $args ) = @_;
@@ -51,7 +51,7 @@ use Test::More tests => 3;
     use Moose;
 
     has notification =>
-      ( is => 'ro', isa => 'MooseX::Notification', required => 1 );
+      ( is => 'ro', isa => 'Notification::Center', required => 1 );
 
     sub BUILD {
         my ( $self, $args ) = @_;
@@ -82,7 +82,7 @@ my $c = container 'TestApp' => as {
     service 'lname' => 'Wall';
 
     service 'notification_center' => (
-        class     => 'MooseX::Notification',
+        class     => 'Notification::Center',
         lifecycle => 'Singleton',
     );
 

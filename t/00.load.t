@@ -3,7 +3,7 @@
 use Test::More tests => 1;
 
 BEGIN {
-	use_ok( 'MooseX::Notification' );
+	use_ok( 'Notification::Center' );
 }
 
-diag( "Testing MooseX::Notification $MooseX::Notification::VERSION, Perl $], $^X" );
+diag( "Testing Notification::Center $Notification::Center::VERSION, Perl $], $^X" );

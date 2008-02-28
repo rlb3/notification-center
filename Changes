@@ -1,5 +1,8 @@
-Revision history for MooseX-Notification
+Revision history for Notification-Center
 
-0.02    Feb 27 2008
+0.0.3   Feb 27 2008
+        Rename MooseX::Notification to Notification::Center
+
+0.0.2   Feb 27 2008
         First version, released on an unsuspecting world.
 
