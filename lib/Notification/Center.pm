@@ -234,4 +234,8 @@ args: data you want to pass into observers
 
 =back
 
+=head1 GIT
+
+http://www.rlb3.com/cgi-bin/gitweb.cgi?p=Notification-Center.git;a=summary
+
 =cut
