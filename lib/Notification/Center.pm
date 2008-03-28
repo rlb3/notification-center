@@ -5,7 +5,7 @@ use Scalar::Util qw(refaddr);
 use Set::Object;
 
 our $AUTHORITY = 'CPAN:RLB';
-our $VERSION   = '0.0.3';
+our $VERSION   = '0.0.4';
 
 has observers => (
     is      => 'ro',
@@ -94,15 +94,15 @@ Notification::Center - An observer/notification for Moose
         sub inc {
             my ($self) = @_;
             $self->count( $self->count + 1 );
-            my $mn = Notification::Center->default;
-            $mn->notify( 'count', $self->count );
+            my $nc = Notification::Center->default;
+            $nc->notify( { event => 'count', args => $self->count } );
         }
 
         sub dec {
             my ($self) = @_;
             $self->count( $self->count - 1 );
-            my $mn = Notification::Center->default;
-            $mn->notify( { event => 'count', data => $self->count } );
+            my $nc = Notification::Center->default;
+            $nc->notify( { event => 'count', args => $self->count } );
         }
 
         no Moose;
