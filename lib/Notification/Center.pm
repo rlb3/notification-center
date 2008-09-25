@@ -78,7 +78,7 @@ __END__
 
 =head1 NAME
 
-Notification::Center - An observer/notification for Moose
+Notification::Center - An observer/notification for perl
 
 =head1 SYNOPSIS
 
@@ -234,8 +234,8 @@ args: data you want to pass into observers
 
 =back
 
-=head1 GIT
+=head1 GIT Repository
 
-http://www.rlb3.com/cgi-bin/gitweb.cgi?p=Notification-Center.git;a=summary
+http://github.com/rlb3/notification-center/tree/master
 
 =cut
