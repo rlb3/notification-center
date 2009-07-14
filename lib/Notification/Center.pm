@@ -5,7 +5,7 @@ use Scalar::Util qw(refaddr);
 use Set::Object;
 
 our $AUTHORITY = 'CPAN:RLB';
-our $VERSION   = '0.0.4';
+our $VERSION   = '0.0.5';
 
 has observers => (
     is      => 'ro',
