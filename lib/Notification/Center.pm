@@ -36,7 +36,7 @@ sub add {
     $self->observers->{$event} ||= Set::Object->new;
 
     $self->observers->{$event}->insert($observer);
-    $self->method_calls->{ refaddr $observer } = $method;
+    $self->method_calls->{ refaddr $observer }->{$event} = $method;
 }
 
 sub remove {
@@ -45,7 +45,7 @@ sub remove {
     my $event = $args->{'event'} || 'DEFAULT';
     my $observer = $args->{'observer'};
 
-    delete $self->method_calls->{ refaddr $observer };
+    delete $self->method_calls->{ refaddr $observer }->{$event};
     $self->observers->{$event}->remove($observer);
 }
 
@@ -65,7 +65,8 @@ sub notify {
     }
 
     foreach my $observer ( $observers->members ) {
-        my $method = $self->method_calls->{ refaddr $observer };
+        my $method = $self->method_calls->{ refaddr $observer }->{$event} ||
+            $self->method_calls->{ refaddr $observer }->{'DEFAULT'};
         $observer->$method($args->{'args'}) if $observer->can($method);
     }
 }
@@ -149,7 +150,7 @@ Notification::Center - An observer/notification for perl
 
 
     or use IOC using Bread::Board
-    
+
     use Bread::Board;
 
     my $c = container 'TestApp' => as {
